@@ -86,9 +86,7 @@ export function HomeClient({ projects }: HomeClientProps) {
         <button
           onClick={handleViewAsStakeholder}
           className="fixed bottom-4 right-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-lg hover:bg-primary/90 text-sm font-medium"
-        >
-          View as Stakeholder (Demo)
-        </button>
+        ></button>
       )}
 
       <CreateProjectModal
