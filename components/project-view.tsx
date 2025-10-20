@@ -270,7 +270,12 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                 Upload PRD
               </Button>
             </div>
-            <PRDDocument prdContent={project.prd_content} fileName={project.prd_file_name} />
+            <PRDDocument
+              prdContent={project.prd_content}
+              fileName={project.prd_file_name}
+              projectId={projectId}
+              fileUrl={project.prd_file_url}
+            />
           </section>
 
           {/* Q&S Section */}

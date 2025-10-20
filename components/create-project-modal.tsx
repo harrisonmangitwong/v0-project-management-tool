@@ -71,14 +71,9 @@ export function CreateProjectModal({ open, onOpenChange, onCreateProject }: Crea
     setError(null)
 
     try {
-      let prdContent = ""
-      if (prdFile) {
-        prdContent = await prdFile.text()
-      }
-
       const { data: project, error: projectError } = await createProject({
         name: projectName,
-        prdContent: prdContent || undefined,
+        prdContent: undefined, // Skip content for now - will add proper PDF handling later
         prdFileName: prdFile?.name,
       })
 
