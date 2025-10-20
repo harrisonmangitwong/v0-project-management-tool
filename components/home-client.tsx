@@ -76,9 +76,11 @@ export function HomeClient({ projects }: HomeClientProps) {
         ) : selectedProjectId ? (
           <ProjectView projectId={selectedProjectId} />
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            {projects.length === 0 ? "Create your first project to get started" : "Select a project to get started"}
-          </div>
+          !isCreateModalOpen && (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              {projects.length === 0 ? "Create your first project to get started" : "Select a project to get started"}
+            </div>
+          )
         )}
       </main>
 

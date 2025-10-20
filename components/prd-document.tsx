@@ -1,10 +1,7 @@
 "use client"
-
-import { useState } from "react"
-import { FileText, MoreVertical, X } from "lucide-react"
+import { FileText, MoreVertical, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -280,80 +277,79 @@ function parseMarkdown(markdown: string): JSX.Element[] {
 interface PRDDocumentProps {
   prdContent?: string | null
   fileName?: string | null
+  projectId?: string // Added projectId prop to construct API URL
+  fileUrl?: string | null // Added fileUrl prop for download link
 }
 
-export function PRDDocument({ prdContent, fileName }: PRDDocumentProps) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const content = prdContent || "No PRD uploaded yet. Click 'Upload PRD' to add your product requirements document."
-  const displayFileName = fileName || "No PRD uploaded"
+export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDocumentProps) {
+  const hasFile = !!fileName
   const hasContent = !!prdContent
+  const displayFileName = fileName || "No PRD uploaded"
+
+  const hasBlobURL = !!fileUrl && fileUrl.startsWith("https://")
+  const isPDFFile = fileName?.toLowerCase().endsWith(".pdf")
+
+  const handleDownload = () => {
+    if (!hasBlobURL || !fileUrl) return
+    const link = document.createElement("a")
+    link.href = fileUrl
+    link.download = fileName || "document.pdf"
+    link.target = "_blank"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
-    <>
-      <Card
-        className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-background"
-        onClick={() => hasContent && setIsOpen(true)}
-      >
-        {/* Document Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-            <h3 className="font-medium">{displayFileName}</h3>
+    <Card className="overflow-hidden bg-background">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+            <FileText className="h-5 w-5 text-primary" />
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation()
-            }}
-          >
-            <MoreVertical className="h-5 w-5" />
-          </Button>
+          <h3 className="font-medium">{displayFileName}</h3>
         </div>
-
-        {/* Document Preview */}
-        <div className="p-6 bg-background max-h-[400px] overflow-y-auto">
-          {hasContent ? (
-            <div className="prose prose-sm max-w-none text-muted-foreground">
-              <div className="text-sm leading-relaxed whitespace-pre-wrap line-clamp-[15]">
-                {content.slice(0, 800)}...
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">{content}</p>
-            </div>
+        <div className="flex items-center gap-2">
+          {hasBlobURL && isPDFFile && (
+            <Button onClick={handleDownload} size="sm" variant="outline" className="gap-2 bg-transparent">
+              <Download className="h-4 w-4" />
+              Download PDF
+            </Button>
+          )}
+          {hasFile && (
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-5 w-5" />
+            </Button>
           )}
         </div>
-      </Card>
+      </div>
 
-      {/* Full Document Dialog */}
-      {hasContent && (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0">
-            <DialogHeader className="border-b border-border px-6 py-4 shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-primary" />
-                  </div>
-                  <DialogTitle>{displayFileName}</DialogTitle>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            </DialogHeader>
-            <div className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="max-w-none">{parseMarkdown(content)}</div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+      <div className="bg-background">
+        {hasContent ? (
+          <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
+        ) : hasFile ? (
+          <div className="p-6 text-center py-12">
+            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">Document Uploaded</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Your document has been uploaded successfully. Text extraction may take a moment.
+            </p>
+            {hasBlobURL && (
+              <Button onClick={handleDownload} className="gap-2">
+                <Download className="h-4 w-4" />
+                Download Original File
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="p-6 text-center py-12 text-muted-foreground">
+            <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
+            <p className="text-base">
+              No PRD uploaded yet. Click 'Upload PRD' to add your product requirements document.
+            </p>
+          </div>
+        )}
+      </div>
+    </Card>
   )
 }

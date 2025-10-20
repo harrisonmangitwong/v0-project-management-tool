@@ -54,8 +54,27 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
     setError(null)
 
     try {
-      const content = await selectedFile.text()
-      const { error: uploadError } = await uploadPRD(projectId, content, selectedFile.name)
+      const formData = new FormData()
+      formData.append("file", selectedFile)
+
+      const response = await fetch("/api/upload-prd", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file")
+      }
+
+      const data = await response.json()
+      console.log("[v0] File uploaded:", data)
+
+      const { error: uploadError } = await uploadPRD(
+        projectId,
+        data.extractedText || data.url, // Use extracted text if available, otherwise use URL
+        selectedFile.name,
+        data.url, // Pass the Blob URL separately for download
+      )
 
       if (uploadError) {
         throw new Error(uploadError)
@@ -66,6 +85,7 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
       onOpenChange(false)
       router.refresh()
     } catch (err) {
+      console.error("[v0] Upload error:", err)
       setError(err instanceof Error ? err.message : "Failed to upload PRD")
     } finally {
       setIsUploading(false)
@@ -87,7 +107,6 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* File Upload Area */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -116,14 +135,15 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
             </label>
           </div>
 
-          {/* Selected File Preview */}
           {selectedFile && (
             <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
               <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <FileText className="h-5 w-5 text-primary" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{selectedFile.name}</p>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <p className="font-medium truncate" title={selectedFile.name}>
+                  {selectedFile.name}
+                </p>
                 <p className="text-sm text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</p>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setSelectedFile(null)} disabled={isUploading}>
@@ -132,10 +152,8 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
             </div>
           )}
 
-          {/* Error Message */}
           {error && <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-lg">{error}</div>}
 
-          {/* Info Message */}
           <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
             <p className="text-sm text-blue-900 dark:text-blue-100">
               <strong>Note:</strong> Uploading a new PRD will replace the existing document. All stakeholder reviews and
@@ -144,7 +162,6 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={handleCancel} disabled={isUploading}>
             Cancel
