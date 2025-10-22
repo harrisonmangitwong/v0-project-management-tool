@@ -203,6 +203,12 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       ])
 
       if (projectResult.data) {
+        console.log("[v0] Project data loaded:", {
+          name: projectResult.data.name,
+          prd_file_name: projectResult.data.prd_file_name,
+          prd_file_url: projectResult.data.prd_file_url,
+          has_prd_content: !!projectResult.data.prd_content,
+        })
         setProject(projectResult.data)
       }
       if (stakeholdersResult.data) {

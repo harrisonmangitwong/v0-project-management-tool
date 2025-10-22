@@ -294,6 +294,16 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
   const isPDFFile = fileName?.toLowerCase().endsWith(".pdf")
   const canPreviewPDF = hasBlobURL && isPDFFile && fileUrl
 
+  console.log("[v0] PRDDocument props:", {
+    fileName,
+    fileUrl,
+    hasFile,
+    hasContent,
+    hasBlobURL,
+    isPDFFile,
+    canPreviewPDF,
+  })
+
   const handleDownload = () => {
     if (!hasBlobURL || !fileUrl) return
     const link = document.createElement("a")
@@ -307,6 +317,7 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
 
   const handlePreviewPDF = () => {
     if (canPreviewPDF) {
+      console.log("[v0] Opening PDF preview modal with URL:", fileUrl)
       setShowPDFPreview(true)
     }
   }
@@ -347,6 +358,7 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
             <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
           ) : canPreviewPDF ? (
             <div className="p-6">
+              {console.log("[v0] Rendering PDF iframe with URL:", fileUrl)}
               <div className="border border-border rounded-lg overflow-hidden bg-muted/10">
                 <iframe src={fileUrl} className="w-full h-[600px]" title="PRD PDF Preview" />
               </div>
@@ -390,6 +402,7 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
               <DialogTitle>{fileName}</DialogTitle>
             </DialogHeader>
             <div className="flex-1 overflow-hidden">
+              {console.log("[v0] Rendering PDF modal iframe with URL:", fileUrl)}
               <iframe src={fileUrl} className="w-full h-full min-h-[500px]" title="PRD PDF Preview" />
             </div>
           </DialogContent>
