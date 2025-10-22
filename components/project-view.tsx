@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, Upload, Trash2 } from "lucide-react"
+import { ChevronLeft, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
@@ -10,21 +10,11 @@ import { Badge } from "@/components/ui/badge"
 import { PRDDocument } from "@/components/prd-document"
 import { UploadPRDModal } from "@/components/upload-prd-modal"
 import { ScheduleReviewModal } from "@/components/schedule-review-modal"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { getProject, deleteProject } from "@/lib/actions/projects"
-import { getProjectStakeholders } from "@/lib/actions/stakeholders"
 import type { Project } from "@/lib/actions/projects"
 import type { Stakeholder } from "@/lib/actions/stakeholders"
 import { useRouter } from "next/navigation"
+import { getProject } from "@/lib/actions/projects"
+import { getProjectStakeholders } from "@/lib/actions/stakeholders"
 
 interface ProjectViewProps {
   projectId: string
@@ -201,8 +191,6 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   const [questions, setQuestions] = useState<any[]>([])
   const [uploadPRDOpen, setUploadPRDOpen] = useState(false)
   const [scheduleReviewOpen, setScheduleReviewOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [project, setProject] = useState<Project | null>(null)
   const [stakeholders, setStakeholders] = useState<Stakeholder[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -250,20 +238,6 @@ export function ProjectView({ projectId }: ProjectViewProps) {
     // In a real app, this would send notifications to stakeholders
   }
 
-  const handleDeleteProject = async () => {
-    setIsDeleting(true)
-    const result = await deleteProject(projectId)
-
-    if (result.error) {
-      console.error("[v0] Error deleting project:", result.error)
-      setIsDeleting(false)
-      return
-    }
-
-    console.log("[v0] Project deleted successfully")
-    router.push("/")
-  }
-
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -289,16 +263,6 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-semibold">{project.name}</h1>
-          <div className="ml-auto">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setDeleteDialogOpen(true)}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-5 w-5" />
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -402,28 +366,6 @@ export function ProjectView({ projectId }: ProjectViewProps) {
         projectId={projectId}
         onScheduleReview={handleScheduleReview}
       />
-
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{project?.name}"? This action cannot be undone and will permanently
-              delete the project and all associated data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteProject}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
