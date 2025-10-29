@@ -51,14 +51,18 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      console.log("[v0] No file selected")
+      return
+    }
 
     if (file.type !== "application/pdf") {
       setError("Please upload a PDF file")
       return
     }
 
-    console.log("[v0] Starting file upload:", file.name, "Size:", file.size)
+    console.log("[v0] ===== FILE UPLOAD STARTED =====")
+    console.log("[v0] File:", file.name, "Size:", file.size)
     setIsUploading(true)
     setError(null)
 
@@ -66,37 +70,44 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
       const formData = new FormData()
       formData.append("file", file)
 
-      console.log("[v0] Sending request to /api/upload-prd")
+      console.log("[v0] Sending POST request to /api/upload-prd...")
       const response = await fetch("/api/upload-prd", {
         method: "POST",
         body: formData,
       })
 
-      console.log("[v0] Response status:", response.status)
+      console.log("[v0] Response received, status:", response.status)
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error("[v0] Server error:", errorData)
+        console.error("[v0] Server returned error:", errorData)
         throw new Error(errorData.error || "Failed to upload file")
       }
 
-      const { url, filename, extractedText } = await response.json()
-      console.log("[v0] Upload successful, URL:", url, "Text length:", extractedText?.length || 0)
+      const responseData = await response.json()
+      console.log("[v0] Response data:", responseData)
 
-      // Upload the extracted text and blob URL to the database
-      console.log("[v0] Saving to database...")
+      const { url, filename, extractedText } = responseData
+
+      console.log("[v0] Calling uploadPRD action...")
+      console.log("[v0]   - projectId:", projectId)
+      console.log("[v0]   - extractedText length:", extractedText?.length || 0)
+      console.log("[v0]   - url:", url)
+      console.log("[v0]   - filename:", filename)
+
       const { error: uploadError } = await uploadPRD(projectId, extractedText, url, filename)
 
       if (uploadError) {
-        console.error("[v0] Database save error:", uploadError)
+        console.error("[v0] uploadPRD returned error:", uploadError)
         throw new Error(uploadError)
       }
 
-      console.log("[v0] Upload complete, closing modal")
+      console.log("[v0] ✓ Upload complete! Closing modal and refreshing...")
       onOpenChange(false)
       router.refresh()
     } catch (err) {
-      console.error("[v0] Upload error:", err)
+      console.error("[v0] ===== UPLOAD FAILED =====")
+      console.error("[v0] Error:", err)
       setError(err instanceof Error ? err.message : "Failed to upload PDF")
     } finally {
       setIsUploading(false)
@@ -182,11 +193,6 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
           </Button>
           {uploadMode === "text" && (
             <Button onClick={handleTextUpload} disabled={!prdText.trim() || isUploading}>
-              {isUploading ? "Uploading..." : "Upload PRD"}
-            </Button>
-          )}
-          {uploadMode === "file" && (
-            <Button onClick={() => {}} disabled={isUploading}>
               {isUploading ? "Uploading..." : "Upload PRD"}
             </Button>
           )}
