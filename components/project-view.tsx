@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge"
 import { PRDDocument } from "@/components/prd-document"
 import { UploadPRDModal } from "@/components/upload-prd-modal"
 import { ScheduleReviewModal } from "@/components/schedule-review-modal"
-import { getProject } from "@/lib/actions/projects"
-import { getProjectStakeholders } from "@/lib/actions/stakeholders"
 import type { Project } from "@/lib/actions/projects"
 import type { Stakeholder } from "@/lib/actions/stakeholders"
+import { useRouter } from "next/navigation"
+import { getProject } from "@/lib/actions/projects"
+import { getProjectStakeholders } from "@/lib/actions/stakeholders"
 
 interface ProjectViewProps {
   projectId: string
@@ -193,6 +194,8 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   const [project, setProject] = useState<Project | null>(null)
   const [stakeholders, setStakeholders] = useState<Stakeholder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const router = useRouter()
 
   useEffect(() => {
     async function loadData() {
@@ -203,6 +206,12 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       ])
 
       if (projectResult.data) {
+        console.log("[v0] Project data loaded:", {
+          name: projectResult.data.name,
+          prd_file_name: projectResult.data.prd_file_name,
+          prd_file_url: projectResult.data.prd_file_url,
+          has_prd_content: !!projectResult.data.prd_content,
+        })
         setProject(projectResult.data)
       }
       if (stakeholdersResult.data) {
@@ -211,7 +220,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       setIsLoading(false)
     }
     loadData()
-  }, [projectId])
+  }, [projectId, refreshKey]) // Add refreshKey as dependency
 
   const filteredQuestions = questions.filter((q) => {
     if (activeTab === "all") return true
@@ -220,9 +229,9 @@ export function ProjectView({ projectId }: ProjectViewProps) {
 
   const unresolvedCount = questions.filter((q) => q.status === "unresolved").length
 
-  const handlePRDUpload = (file: File) => {
-    console.log("[v0] PRD uploaded:", file.name)
-    // In a real app, this would upload the file and update the PRD
+  const handlePRDUpload = () => {
+    console.log("[v0] PRD uploaded, refreshing project data...")
+    setRefreshKey((prev) => prev + 1)
   }
 
   const handleScheduleReview = () => {
@@ -251,7 +260,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       {/* Header */}
       <div className="border-b border-border p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={() => router.push("/")}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-semibold">{project.name}</h1>
@@ -273,16 +282,15 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <PRDDocument
               prdContent={project.prd_content}
               fileName={project.prd_file_name}
-              projectId={projectId}
               fileUrl={project.prd_file_url}
             />
           </section>
 
-          {/* Q&S Section */}
+          {/* Q&A Section */}
           <section>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold">Q&S</h2>
+                <h2 className="text-lg font-semibold">Q&A</h2>
                 {unresolvedCount > 0 && (
                   <Badge variant="destructive" className="rounded-full">
                     {unresolvedCount} unresolved
@@ -345,8 +353,8 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       <UploadPRDModal
         open={uploadPRDOpen}
         onOpenChange={setUploadPRDOpen}
-        onUpload={handlePRDUpload}
         projectId={projectId}
+        onUploadComplete={handlePRDUpload}
       />
 
       {/* Schedule Review Modal */}

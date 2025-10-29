@@ -1,154 +1,185 @@
 "use client"
-
-import type React from "react"
 import { useState } from "react"
+import type React from "react"
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Upload, FileText, X } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
 import { uploadPRD } from "@/lib/actions/projects"
 import { useRouter } from "next/navigation"
+import { Upload } from "lucide-react"
 
 interface UploadPRDModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onUpload: (file: File) => void
   projectId: string
+  onUploadComplete?: () => void // Add callback prop
 }
 
-export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: UploadPRDModalProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
+export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete }: UploadPRDModalProps) {
+  const [prdText, setPrdText] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadMode, setUploadMode] = useState<"text" | "file">("text")
   const router = useRouter()
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = () => {
-    setIsDragging(false)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file) {
-      setSelectedFile(file)
+  const handleTextUpload = async () => {
+    if (!prdText.trim()) {
+      setError("Please enter PRD content")
+      return
     }
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-    }
-  }
-
-  const handleUpload = async () => {
-    if (!selectedFile) return
 
     setIsUploading(true)
     setError(null)
 
     try {
-      const formData = new FormData()
-      formData.append("file", selectedFile)
-
-      const response = await fetch("/api/upload-prd", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to upload file")
-      }
-
-      const data = await response.json()
-      console.log("[v0] File uploaded:", data)
-
-      const { error: uploadError } = await uploadPRD(
-        projectId,
-        data.extractedText || data.url, // Use extracted text if available, otherwise use URL
-        selectedFile.name,
-        data.url, // Pass the Blob URL separately for download
-      )
+      const { error: uploadError } = await uploadPRD(projectId, prdText, null, "PRD.txt")
 
       if (uploadError) {
         throw new Error(uploadError)
       }
 
-      onUpload(selectedFile)
-      setSelectedFile(null)
+      setPrdText("")
       onOpenChange(false)
-      router.refresh()
+      onUploadComplete?.()
     } catch (err) {
-      console.error("[v0] Upload error:", err)
+      console.error("Upload error:", err)
       setError(err instanceof Error ? err.message : "Failed to upload PRD")
     } finally {
       setIsUploading(false)
     }
   }
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      console.log("[v0] No file selected")
+      return
+    }
+
+    if (file.type !== "application/pdf") {
+      setError("Please upload a PDF file")
+      return
+    }
+
+    console.log("[v0] ===== FILE UPLOAD STARTED =====")
+    console.log("[v0] File:", file.name, "Size:", file.size)
+    setIsUploading(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      console.log("[v0] Sending POST request to /api/upload-prd...")
+      const response = await fetch("/api/upload-prd", {
+        method: "POST",
+        body: formData,
+      })
+
+      console.log("[v0] Response received, status:", response.status)
+
+      if (!response.ok) {
+        let errorMessage = "Failed to upload file"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch {
+          // Response is not JSON, try to get text
+          const errorText = await response.text()
+          errorMessage = errorText || errorMessage
+        }
+        console.error("[v0] Server returned error:", errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      const responseData = await response.json()
+      console.log("[v0] Response data:", responseData)
+
+      const { url, filename } = responseData
+
+      console.log("[v0] Calling uploadPRD action...")
+      console.log("[v0]   - projectId:", projectId)
+      console.log("[v0]   - url:", url)
+      console.log("[v0]   - filename:", filename)
+
+      const { error: uploadError } = await uploadPRD(projectId, null, url, filename)
+
+      if (uploadError) {
+        console.error("[v0] uploadPRD returned error:", uploadError)
+        throw new Error(uploadError)
+      }
+
+      console.log("[v0] ✓ Upload complete! Closing modal and refreshing...")
+      onOpenChange(false)
+      onUploadComplete?.()
+    } catch (err) {
+      console.error("[v0] ===== UPLOAD FAILED =====")
+      console.error("[v0] Error:", err)
+      setError(err instanceof Error ? err.message : "Failed to upload PDF")
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   const handleCancel = () => {
-    setSelectedFile(null)
+    setPrdText("")
     setError(null)
     onOpenChange(false)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Upload PRD</DialogTitle>
-          <DialogDescription>Upload or update the Product Requirements Document for this project</DialogDescription>
+          <DialogDescription>Enter text or upload a PDF document</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-              isDragging ? "border-primary bg-primary/5" : "border-border"
-            }`}
-          >
-            <input
-              type="file"
-              id="prd-file"
-              className="hidden"
-              accept=".pdf,.doc,.docx,.txt,.md"
-              onChange={handleFileSelect}
-            />
-            <label htmlFor="prd-file" className="cursor-pointer">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Upload className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">Drop your PRD here or click to browse</p>
-                  <p className="text-sm text-muted-foreground mt-1">Supports PDF, DOC, DOCX, TXT, MD</p>
-                </div>
-              </div>
-            </label>
+          <div className="flex gap-2 p-1 bg-muted rounded-lg">
+            <Button
+              variant={uploadMode === "text" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setUploadMode("text")}
+              className="flex-1"
+            >
+              Text Input
+            </Button>
+            <Button
+              variant={uploadMode === "file" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setUploadMode("file")}
+              className="flex-1"
+            >
+              Upload PDF
+            </Button>
           </div>
 
-          {selectedFile && (
-            <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-              <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <p className="font-medium truncate" title={selectedFile.name}>
-                  {selectedFile.name}
-                </p>
-                <p className="text-sm text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</p>
-              </div>
-              <Button variant="ghost" size="icon" onClick={() => setSelectedFile(null)} disabled={isUploading}>
-                <X className="h-4 w-4" />
-              </Button>
+          {uploadMode === "text" ? (
+            <Textarea
+              placeholder="Enter your PRD content here... (Supports Markdown formatting)"
+              value={prdText}
+              onChange={(e) => setPrdText(e.target.value)}
+              className="min-h-[300px] font-mono text-sm"
+            />
+          ) : (
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground mb-4">Upload a PDF file to extract and display its content</p>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="pdf-upload"
+                disabled={isUploading}
+              />
+              <label htmlFor="pdf-upload">
+                <Button variant="outline" disabled={isUploading} asChild>
+                  <span>{isUploading ? "Uploading..." : "Choose PDF File"}</span>
+                </Button>
+              </label>
             </div>
           )}
 
@@ -156,8 +187,10 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
 
           <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
             <p className="text-sm text-blue-900 dark:text-blue-100">
-              <strong>Note:</strong> Uploading a new PRD will replace the existing document. All stakeholder reviews and
-              questions will be preserved.
+              <strong>Note:</strong>{" "}
+              {uploadMode === "text"
+                ? "You can use Markdown formatting (headings, lists, tables, etc.)."
+                : "Your PDF will be stored and available for download. For best results, also paste the text content in the Text Input tab."}
             </p>
           </div>
         </div>
@@ -166,9 +199,16 @@ export function UploadPRDModal({ open, onOpenChange, onUpload, projectId }: Uplo
           <Button variant="outline" onClick={handleCancel} disabled={isUploading}>
             Cancel
           </Button>
-          <Button onClick={handleUpload} disabled={!selectedFile || isUploading}>
-            {isUploading ? "Uploading..." : "Upload PRD"}
-          </Button>
+          {uploadMode === "text" && (
+            <Button onClick={handleTextUpload} disabled={!prdText.trim() || isUploading}>
+              {isUploading ? "Uploading..." : "Upload PRD"}
+            </Button>
+          )}
+          {uploadMode === "file" && (
+            <Button onClick={handleFileUpload} disabled={isUploading}>
+              {isUploading ? "Uploading..." : "Upload PDF"}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

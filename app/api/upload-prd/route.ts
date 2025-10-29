@@ -1,47 +1,50 @@
 import { put } from "@vercel/blob"
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export async function POST(request: NextRequest) {
+export const runtime = "nodejs"
+export const maxDuration = 60
+
+export async function POST(request: Request) {
   try {
+    console.log("[v0] ===== PDF UPLOAD API CALLED =====")
+
     const formData = await request.formData()
     const file = formData.get("file") as File
 
     if (!file) {
+      console.error("[v0] ERROR: No file provided in request")
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    // Upload to Vercel Blob with public access
+    console.log("[v0] File received:")
+    console.log("[v0]   - Name:", file.name)
+    console.log("[v0]   - Type:", file.type)
+    console.log("[v0]   - Size:", file.size, "bytes")
+
+    console.log("[v0] Uploading to Vercel Blob...")
     const blob = await put(file.name, file, {
       access: "public",
+      addRandomSuffix: true,
     })
 
-    let extractedText: string | null = null
-    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-      try {
-        const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")).default
-        const arrayBuffer = await file.arrayBuffer()
-        const buffer = Buffer.from(arrayBuffer)
-        const data = await pdfParse(buffer)
-        extractedText = data.text
-        console.log("[v0] Extracted text from PDF, length:", extractedText.length)
-      } catch (error) {
-        console.error("[v0] PDF text extraction failed:", error)
-        // Continue without extracted text if parsing fails
-      }
-    } else if (file.type.startsWith("text/") || file.name.match(/\.(txt|md|markdown)$/i)) {
-      // For text files, read the content directly
-      extractedText = await file.text()
-    }
+    console.log("[v0] ✓ Upload successful!")
+    console.log("[v0]   - URL:", blob.url)
 
-    return NextResponse.json({
+    const response = {
       url: blob.url,
       filename: file.name,
-      size: file.size,
-      type: file.type,
-      extractedText,
-    })
+      extractedText: null, // No text extraction, just store the PDF
+    }
+
+    console.log("[v0] ===== RETURNING SUCCESS RESPONSE =====")
+    return NextResponse.json(response)
   } catch (error) {
-    console.error("[v0] Upload error:", error)
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    console.error("[v0] ===== UPLOAD ERROR =====")
+    console.error("[v0] Error:", error)
+    console.error("[v0] Stack:", error instanceof Error ? error.stack : "No stack trace")
+    return NextResponse.json(
+      { error: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}` },
+      { status: 500 },
+    )
   }
 }

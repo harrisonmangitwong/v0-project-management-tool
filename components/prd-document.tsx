@@ -1,7 +1,9 @@
 "use client"
-import { FileText, MoreVertical, Download } from "lucide-react"
+import { FileText, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PDFViewer } from "@/components/pdf-viewer"
+import { useState } from "react"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -277,27 +279,27 @@ function parseMarkdown(markdown: string): JSX.Element[] {
 interface PRDDocumentProps {
   prdContent?: string | null
   fileName?: string | null
-  projectId?: string // Added projectId prop to construct API URL
-  fileUrl?: string | null // Added fileUrl prop for download link
+  fileUrl?: string | null
 }
 
-export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDocumentProps) {
-  const hasFile = !!fileName
+export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps) {
+  const [pdfLoadError, setPdfLoadError] = useState(false)
+
   const hasContent = !!prdContent
   const displayFileName = fileName || "No PRD uploaded"
-
-  const hasBlobURL = !!fileUrl && fileUrl.startsWith("https://")
-  const isPDFFile = fileName?.toLowerCase().endsWith(".pdf")
+  const hasPDFDownload = !!fileUrl
+  const isPDFOnly = hasPDFDownload && !hasContent
+  const isPDF = fileName?.toLowerCase().endsWith(".pdf")
 
   const handleDownload = () => {
-    if (!hasBlobURL || !fileUrl) return
-    const link = document.createElement("a")
-    link.href = fileUrl
-    link.download = fileName || "document.pdf"
-    link.target = "_blank"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    if (fileUrl) {
+      const link = document.createElement("a")
+      link.href = fileUrl
+      link.download = fileName || "document.pdf"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 
   return (
@@ -309,38 +311,39 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
           </div>
           <h3 className="font-medium">{displayFileName}</h3>
         </div>
-        <div className="flex items-center gap-2">
-          {hasBlobURL && isPDFFile && (
-            <Button onClick={handleDownload} size="sm" variant="outline" className="gap-2 bg-transparent">
-              <Download className="h-4 w-4" />
-              Download PDF
-            </Button>
-          )}
-          {hasFile && (
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-5 w-5" />
-            </Button>
-          )}
-        </div>
+        {hasPDFDownload && (
+          <Button variant="outline" size="sm" onClick={handleDownload}>
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button>
+        )}
       </div>
 
       <div className="bg-background">
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
-        ) : hasFile ? (
-          <div className="p-6 text-center py-12">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Document Uploaded</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Your document has been uploaded successfully. Text extraction may take a moment.
-            </p>
-            {hasBlobURL && (
-              <Button onClick={handleDownload} className="gap-2">
-                <Download className="h-4 w-4" />
-                Download Original File
-              </Button>
-            )}
-          </div>
+        ) : isPDFOnly ? (
+          pdfLoadError ? (
+            <div className="p-6 text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-10 w-10 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Unable to Display PDF</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  The PDF viewer encountered an error. Please download the file to view it.
+                </p>
+                <Button onClick={handleDownload} className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full max-h-[600px] overflow-auto bg-muted/20 p-6">
+              <PDFViewer url={fileUrl!} onError={() => setPdfLoadError(true)} />
+            </div>
+          )
         ) : (
           <div className="p-6 text-center py-12 text-muted-foreground">
             <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
