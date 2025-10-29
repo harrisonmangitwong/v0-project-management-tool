@@ -340,7 +340,7 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
               </div>
             </div>
           ) : (
-            <div className="w-full min-h-[800px] bg-muted/20 p-6">
+            <div className="w-full max-h-[600px] overflow-auto bg-muted/20 p-6">
               <PDFViewer url={fileUrl!} onError={() => setPdfLoadError(true)} />
             </div>
           )

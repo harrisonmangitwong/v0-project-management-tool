@@ -286,11 +286,11 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             />
           </section>
 
-          {/* Q&S Section */}
+          {/* Q&A Section */}
           <section>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold">Q&S</h2>
+                <h2 className="text-lg font-semibold">Q&A</h2>
                 {unresolvedCount > 0 && (
                   <Badge variant="destructive" className="rounded-full">
                     {unresolvedCount} unresolved
