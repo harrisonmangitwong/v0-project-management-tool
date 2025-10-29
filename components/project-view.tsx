@@ -265,7 +265,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
               variant="ghost"
               size="icon"
               onClick={() => router.push("/")}
-              className="rounded-lg text-primary-foreground hover:bg-foreground/10"
+              className="rounded-lg bg-gray-700 text-white hover:bg-gray-600"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -297,7 +297,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   variant="default"
                   size="default"
                   onClick={() => setUploadPRDOpen(true)}
-                  className="gap-2 shadow-sm bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+                  className="gap-2 shadow-sm bg-gray-700 text-white hover:bg-gray-600"
                 >
                   <Upload className="h-4 w-4" />
                   Upload PRD
@@ -330,7 +330,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   size="sm"
                   onClick={() => setScheduleReviewOpen(true)}
                   disabled={stakeholders.length === 0}
-                  className="shadow-sm bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="shadow-sm bg-gray-700 text-white hover:bg-gray-600 disabled:bg-gray-300 disabled:text-gray-500"
                 >
                   Schedule Review
                 </Button>

@@ -78,7 +78,7 @@ export function Sidebar({
           <h1 className="text-xl font-bold text-sidebar-foreground">SmartPRD</h1>
         </div>
         <Button
-          className="w-full justify-start gap-2 shadow-sm bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+          className="w-full justify-start gap-2 shadow-sm bg-gray-700 text-white hover:bg-gray-600"
           size="default"
           onClick={onCreateProject}
         >
@@ -102,15 +102,15 @@ export function Sidebar({
                   className={cn(
                     "flex-1 text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                     selectedProjectId === project.id
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent",
+                      ? "bg-gray-700 text-white shadow-sm"
+                      : "text-sidebar-foreground hover:bg-gray-200",
                   )}
                 >
                   {project.name}
                 </button>
                 <button
                   onClick={(e) => handleDeleteClick(e, project)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-gray-200 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-all"
                   title="Delete project"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function Sidebar({
       <div className="p-4 border-t border-sidebar-border">
         <button
           onClick={onShowMetrics}
-          className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-all flex items-center gap-2"
+          className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-gray-200 transition-all flex items-center gap-2"
         >
           <BarChart3 className="h-4 w-4" />
           Metrics
