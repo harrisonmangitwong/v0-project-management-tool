@@ -2,6 +2,7 @@
 import { FileText, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PDFViewer } from "@/components/pdf-viewer"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -320,9 +321,7 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
         ) : canShowInline ? (
-          <div className="w-full h-[800px] bg-muted/20">
-            <iframe src={fileUrl} className="w-full h-full border-0" title="PDF Preview" />
-          </div>
+          <PDFViewer fileUrl={fileUrl} />
         ) : isPDFOnly ? (
           <div className="p-6 text-center py-12">
             <FileText className="h-16 w-16 mx-auto mb-4 text-primary opacity-60" />
