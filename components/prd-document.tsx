@@ -1,9 +1,7 @@
 "use client"
-import { FileText, MoreVertical, Download, Eye } from "lucide-react"
+import { FileText, MoreVertical } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useState } from "react"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -279,135 +277,40 @@ function parseMarkdown(markdown: string): JSX.Element[] {
 interface PRDDocumentProps {
   prdContent?: string | null
   fileName?: string | null
-  projectId?: string
-  fileUrl?: string | null
 }
 
-export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDocumentProps) {
-  const [showPDFPreview, setShowPDFPreview] = useState(false)
-
-  const hasFile = !!fileName
+export function PRDDocument({ prdContent, fileName }: PRDDocumentProps) {
   const hasContent = !!prdContent
   const displayFileName = fileName || "No PRD uploaded"
 
-  const hasBlobURL = !!fileUrl && fileUrl.startsWith("https://")
-  const isPDFFile = fileName?.toLowerCase().endsWith(".pdf")
-  const canPreviewPDF = hasBlobURL && isPDFFile && fileUrl
-
-  console.log("[v0] PRDDocument props:", {
-    fileName,
-    fileUrl,
-    hasFile,
-    hasContent,
-    hasBlobURL,
-    isPDFFile,
-    canPreviewPDF,
-  })
-
-  const handleDownload = () => {
-    if (!hasBlobURL || !fileUrl) return
-    const link = document.createElement("a")
-    link.href = fileUrl
-    link.download = fileName || "document.pdf"
-    link.target = "_blank"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  const handlePreviewPDF = () => {
-    if (canPreviewPDF) {
-      console.log("[v0] Opening PDF preview modal with URL:", fileUrl)
-      setShowPDFPreview(true)
-    }
-  }
-
   return (
-    <>
-      <Card className="overflow-hidden bg-background">
-        <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-            <h3 className="font-medium">{displayFileName}</h3>
+    <Card className="overflow-hidden bg-background">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+            <FileText className="h-5 w-5 text-primary" />
           </div>
-          <div className="flex items-center gap-2">
-            {canPreviewPDF && (
-              <Button onClick={handlePreviewPDF} size="sm" variant="outline" className="gap-2 bg-transparent">
-                <Eye className="h-4 w-4" />
-                Preview PDF
-              </Button>
-            )}
-            {hasBlobURL && isPDFFile && (
-              <Button onClick={handleDownload} size="sm" variant="outline" className="gap-2 bg-transparent">
-                <Download className="h-4 w-4" />
-                Download PDF
-              </Button>
-            )}
-            {hasFile && (
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            )}
+          <h3 className="font-medium">{displayFileName}</h3>
+        </div>
+        {hasContent && (
+          <Button variant="ghost" size="icon">
+            <MoreVertical className="h-5 w-5" />
+          </Button>
+        )}
+      </div>
+
+      <div className="bg-background">
+        {hasContent ? (
+          <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
+        ) : (
+          <div className="p-6 text-center py-12 text-muted-foreground">
+            <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
+            <p className="text-base">
+              No PRD uploaded yet. Click 'Upload PRD' to add your product requirements document.
+            </p>
           </div>
-        </div>
-
-        <div className="bg-background">
-          {hasContent && !isPDFFile ? (
-            <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
-          ) : canPreviewPDF ? (
-            <div className="p-6">
-              {console.log("[v0] Rendering PDF iframe with URL:", fileUrl)}
-              <div className="border border-border rounded-lg overflow-hidden bg-muted/10">
-                <iframe src={fileUrl} className="w-full h-[600px]" title="PRD PDF Preview" />
-              </div>
-              <p className="text-sm text-muted-foreground mt-4 text-center">
-                Can't see the PDF?{" "}
-                <button onClick={handleDownload} className="text-primary underline">
-                  Download it here
-                </button>
-              </p>
-            </div>
-          ) : hasFile ? (
-            <div className="p-6 text-center py-12">
-              <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Document Uploaded</h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Your document has been uploaded successfully.
-                {isPDFFile && " Processing PDF for preview..."}
-              </p>
-              {hasBlobURL && (
-                <Button onClick={handleDownload} className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Download Original File
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="p-6 text-center py-12 text-muted-foreground">
-              <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
-              <p className="text-base">
-                No PRD uploaded yet. Click 'Upload PRD' to add your product requirements document.
-              </p>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {canPreviewPDF && (
-        <Dialog open={showPDFPreview} onOpenChange={setShowPDFPreview}>
-          <DialogContent className="max-w-5xl h-[90vh]">
-            <DialogHeader>
-              <DialogTitle>{fileName}</DialogTitle>
-            </DialogHeader>
-            <div className="flex-1 overflow-hidden">
-              {console.log("[v0] Rendering PDF modal iframe with URL:", fileUrl)}
-              <iframe src={fileUrl} className="w-full h-full min-h-[500px]" title="PRD PDF Preview" />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+        )}
+      </div>
+    </Card>
   )
 }

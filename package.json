@@ -53,7 +53,7 @@
     "next": "15.2.4",
     "next-themes": "latest",
     "pdf-parse": "latest",
-    "pdfjs-dist": "latest",
+    "pdfjs-dist": "5.4.296",
     "react": "latest",
     "react-day-picker": "9.8.0",
     "react-dom": "^19",

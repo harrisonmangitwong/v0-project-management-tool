@@ -228,9 +228,9 @@ export function ProjectView({ projectId }: ProjectViewProps) {
 
   const unresolvedCount = questions.filter((q) => q.status === "unresolved").length
 
-  const handlePRDUpload = (file: File) => {
-    console.log("[v0] PRD uploaded:", file.name)
-    // In a real app, this would upload the file and update the PRD
+  const handlePRDUpload = () => {
+    console.log("[v0] PRD uploaded")
+    // Refresh project data after upload
   }
 
   const handleScheduleReview = () => {
@@ -278,12 +278,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                 Upload PRD
               </Button>
             </div>
-            <PRDDocument
-              prdContent={project.prd_content}
-              fileName={project.prd_file_name}
-              projectId={projectId}
-              fileUrl={project.prd_file_url}
-            />
+            <PRDDocument prdContent={project.prd_content} fileName={project.prd_file_name} />
           </section>
 
           {/* Q&S Section */}
@@ -350,12 +345,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       </div>
 
       {/* Upload PRD Modal */}
-      <UploadPRDModal
-        open={uploadPRDOpen}
-        onOpenChange={setUploadPRDOpen}
-        onUpload={handlePRDUpload}
-        projectId={projectId}
-      />
+      <UploadPRDModal open={uploadPRDOpen} onOpenChange={setUploadPRDOpen} projectId={projectId} />
 
       {/* Schedule Review Modal */}
       <ScheduleReviewModal
