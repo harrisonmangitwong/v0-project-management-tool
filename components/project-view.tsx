@@ -258,20 +258,20 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-gradient-to-r from-primary via-primary to-secondary shadow-md">
+      <div className="border-b border-border bg-gradient-to-r from-primary via-primary to-secondary shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push("/")}
-              className="rounded-lg text-primary-foreground hover:bg-white/20 backdrop-blur-sm"
+              className="rounded-lg text-primary-foreground hover:bg-foreground/10"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-primary-foreground">{project.name}</h1>
-              <p className="text-sm text-primary-foreground/90 mt-1">Product Requirements Document</p>
+              <p className="text-sm text-primary-foreground/80 mt-1">Product Requirements Document</p>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <section className="lg:col-span-2 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm">
                     <FileText className="h-5 w-5 text-primary-foreground" />
                   </div>
                   <div>
@@ -297,7 +297,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   variant="default"
                   size="default"
                   onClick={() => setUploadPRDOpen(true)}
-                  className="gap-2 shadow-md bg-primary hover:bg-primary/90"
+                  className="gap-2 shadow-sm bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
                 >
                   <Upload className="h-4 w-4" />
                   Upload PRD
@@ -314,7 +314,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <section className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-sm">
                     <FileText className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <div className="flex items-center gap-2">
@@ -330,7 +330,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   size="sm"
                   onClick={() => setScheduleReviewOpen(true)}
                   disabled={stakeholders.length === 0}
-                  className="shadow-md bg-accent hover:bg-accent/90"
+                  className="shadow-sm bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   Schedule Review
                 </Button>

@@ -4,41 +4,41 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to use more vibrant, visible colors throughout */
-  --background: 217 100% 97%;
+  /* Updated to use soft pastel colors throughout */
+  --background: 220 40% 98%;
   --foreground: 222 47% 11%;
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  --primary: 217 91% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 262 83% 58%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 217 100% 95%;
+  --primary: 220 70% 75%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 280 60% 80%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 220 40% 95%;
   --muted-foreground: 215 16% 47%;
-  --accent: 142 76% 36%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
+  --accent: 160 50% 75%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 70% 70%;
   --destructive-foreground: 0 0% 100%;
-  --border: 217 50% 88%;
-  --input: 214 32% 91%;
-  --ring: 217 91% 60%;
+  --border: 220 30% 88%;
+  --input: 220 30% 91%;
+  --ring: 220 70% 75%;
   --radius: 0.75rem;
-  --chart-1: 217 91% 60%;
-  --chart-2: 142 76% 36%;
-  --chart-3: 262 83% 58%;
-  --chart-4: 24 95% 53%;
-  --chart-5: 339 90% 51%;
-  /* Sidebar now uses vibrant blue background */
-  --sidebar: 217 91% 60%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-primary: 217 91% 50%;
+  --chart-1: 220 70% 75%;
+  --chart-2: 160 50% 75%;
+  --chart-3: 280 60% 80%;
+  --chart-4: 30 80% 75%;
+  --chart-5: 340 70% 75%;
+  /* Sidebar uses soft pastel blue */
+  --sidebar: 220 50% 92%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-primary: 220 70% 65%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 217 91% 70%;
-  --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-border: 217 91% 50%;
-  --sidebar-ring: 0 0% 100%;
+  --sidebar-accent: 220 60% 85%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-border: 220 30% 85%;
+  --sidebar-ring: 220 70% 65%;
 }
 
 .dark {
