@@ -13,9 +13,10 @@ interface UploadPRDModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   projectId: string
+  onUploadComplete?: () => void // Add callback prop
 }
 
-export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModalProps) {
+export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete }: UploadPRDModalProps) {
   const [prdText, setPrdText] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +41,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
 
       setPrdText("")
       onOpenChange(false)
-      router.refresh()
+      onUploadComplete?.()
     } catch (err) {
       console.error("Upload error:", err)
       setError(err instanceof Error ? err.message : "Failed to upload PRD")
@@ -111,7 +112,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
 
       console.log("[v0] ✓ Upload complete! Closing modal and refreshing...")
       onOpenChange(false)
-      router.refresh()
+      onUploadComplete?.()
     } catch (err) {
       console.error("[v0] ===== UPLOAD FAILED =====")
       console.error("[v0] Error:", err)
@@ -204,7 +205,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
             </Button>
           )}
           {uploadMode === "file" && (
-            <Button onClick={() => {}} disabled={isUploading}>
+            <Button onClick={handleFileUpload} disabled={isUploading}>
               {isUploading ? "Uploading..." : "Upload PDF"}
             </Button>
           )}

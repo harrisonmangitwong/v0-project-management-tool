@@ -194,6 +194,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   const [project, setProject] = useState<Project | null>(null)
   const [stakeholders, setStakeholders] = useState<Stakeholder[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
@@ -219,7 +220,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       setIsLoading(false)
     }
     loadData()
-  }, [projectId])
+  }, [projectId, refreshKey]) // Add refreshKey as dependency
 
   const filteredQuestions = questions.filter((q) => {
     if (activeTab === "all") return true
@@ -229,8 +230,8 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   const unresolvedCount = questions.filter((q) => q.status === "unresolved").length
 
   const handlePRDUpload = () => {
-    console.log("[v0] PRD uploaded")
-    // Refresh project data after upload
+    console.log("[v0] PRD uploaded, refreshing project data...")
+    setRefreshKey((prev) => prev + 1)
   }
 
   const handleScheduleReview = () => {
@@ -349,7 +350,12 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       </div>
 
       {/* Upload PRD Modal */}
-      <UploadPRDModal open={uploadPRDOpen} onOpenChange={setUploadPRDOpen} projectId={projectId} />
+      <UploadPRDModal
+        open={uploadPRDOpen}
+        onOpenChange={setUploadPRDOpen}
+        projectId={projectId}
+        onUploadComplete={handlePRDUpload}
+      />
 
       {/* Schedule Review Modal */}
       <ScheduleReviewModal
