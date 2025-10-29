@@ -55,9 +55,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6">
+    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-gradient-to-br from-background via-background to-background/95">
       <div className="w-full max-w-sm">
-        <Card>
+        <Card className="shadow-2xl border-border/50">
           <CardHeader>
             <CardTitle className="text-2xl">Login to SmartPRD</CardTitle>
             <CardDescription>Enter your email and password to access your account</CardDescription>
@@ -91,13 +91,20 @@ export default function LoginPage() {
                     <p className="text-sm text-destructive">{error}</p>
                   </div>
                 )}
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg"
+                  disabled={isLoading}
+                >
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <Link href="/auth/sign-up" className="underline underline-offset-4">
+                <Link
+                  href="/auth/sign-up"
+                  className="underline underline-offset-4 text-primary hover:text-primary/80 transition-colors"
+                >
                   Sign up
                 </Link>
               </div>
