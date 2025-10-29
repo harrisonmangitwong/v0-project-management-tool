@@ -7,7 +7,8 @@ import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 
 if (typeof window !== "undefined") {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
+  // Set workerSrc to a non-existent path to force PDF.js to use fake worker (runs on main thread)
+  pdfjs.GlobalWorkerOptions.workerSrc = ""
 }
 
 interface PDFViewerProps {
@@ -39,6 +40,11 @@ export function PDFViewer({ url, onError }: PDFViewerProps) {
         file={url}
         onLoadSuccess={onDocumentLoadSuccess}
         onLoadError={onDocumentLoadError}
+        options={{
+          standardFontDataUrl: `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts`,
+          cMapUrl: `//cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
+          cMapPacked: true,
+        }}
         loading={
           <div className="flex items-center justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
