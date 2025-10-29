@@ -7,8 +7,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 
 if (typeof window !== "undefined") {
-  // Set workerSrc to a non-existent path to force PDF.js to use fake worker (runs on main thread)
-  pdfjs.GlobalWorkerOptions.workerSrc = ""
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 }
 
 interface PDFViewerProps {
