@@ -1,8 +1,7 @@
 "use client"
-import { FileText, Download } from "lucide-react"
+import { FileText, Download, ExternalLink } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { PDFViewer } from "@/components/pdf-viewer"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -287,7 +286,6 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
   const hasPDFDownload = !!fileUrl
   const isPDFOnly = hasPDFDownload && !hasContent
   const isPDF = fileName?.toLowerCase().endsWith(".pdf")
-  const canShowInline = isPDFOnly && isPDF && fileUrl
 
   const handleDownload = () => {
     if (fileUrl) {
@@ -297,6 +295,12 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+    }
+  }
+
+  const handleOpenInNewTab = () => {
+    if (fileUrl) {
+      window.open(fileUrl, "_blank")
     }
   }
 
@@ -320,19 +324,30 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
       <div className="bg-background">
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
-        ) : canShowInline ? (
-          <PDFViewer fileUrl={fileUrl} />
         ) : isPDFOnly ? (
-          <div className="p-6 text-center py-12">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-primary opacity-60" />
-            <p className="text-base text-foreground font-medium mb-2">PDF Document Uploaded</p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Your PDF has been uploaded successfully. Click the "Download PDF" button above to view it.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Tip: For better inline viewing, you can also paste the text content using the "Upload PRD" button and
-              selecting "Text Input".
-            </p>
+          <div className="p-6 text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                <FileText className="h-10 w-10 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">PDF Document Ready</h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Your PDF has been uploaded successfully. View it in your browser or download it to your device.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button onClick={handleOpenInNewTab} className="gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  Open in New Tab
+                </Button>
+                <Button variant="outline" onClick={handleDownload} className="gap-2 bg-transparent">
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-6">
+                Tip: For inline text viewing, you can paste the content using "Upload PRD" → "Text Input"
+              </p>
+            </div>
           </div>
         ) : (
           <div className="p-6 text-center py-12 text-muted-foreground">
