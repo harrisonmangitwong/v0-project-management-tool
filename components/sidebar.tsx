@@ -78,7 +78,7 @@ export function Sidebar({
           <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">SmartPRD</h1>
         </div>
         <Button
-          className="w-full justify-start gap-2 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-xl transition-all duration-200 font-medium"
+          className="w-full justify-start gap-2 shadow-2xl bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_8px_30px_rgb(59,130,246,0.5)] transition-all duration-200 font-medium border-2 border-primary/30 hover:border-primary/50"
           size="default"
           onClick={onCreateProject}
         >

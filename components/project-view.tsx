@@ -265,7 +265,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
               variant="ghost"
               size="icon"
               onClick={() => router.push("/")}
-              className="rounded-xl bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="rounded-xl bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 shadow-2xl hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] border-2 border-white/30 hover:border-white/50"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -297,7 +297,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   variant="default"
                   size="default"
                   onClick={() => setUploadPRDOpen(true)}
-                  className="gap-2 shadow-lg hover:shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 font-medium"
+                  className="gap-2 shadow-2xl hover:shadow-[0_8px_30px_rgb(59,130,246,0.5)] bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 font-medium border-2 border-primary/30 hover:border-primary/50"
                 >
                   <Upload className="h-4 w-4" />
                   Upload PRD
@@ -330,7 +330,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   size="sm"
                   onClick={() => setScheduleReviewOpen(true)}
                   disabled={stakeholders.length === 0}
-                  className="shadow-lg hover:shadow-xl bg-accent text-accent-foreground hover:bg-accent/90 disabled:bg-muted disabled:text-muted-foreground transition-all duration-200 font-medium"
+                  className="shadow-2xl hover:shadow-[0_8px_30px_rgb(168,85,247,0.5)] bg-accent text-accent-foreground hover:bg-accent/90 disabled:bg-muted disabled:text-muted-foreground transition-all duration-200 font-medium border-2 border-accent/30 hover:border-accent/50 disabled:border-transparent"
                 >
                   Schedule Review
                 </Button>
