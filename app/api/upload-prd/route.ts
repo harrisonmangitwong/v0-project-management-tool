@@ -1,5 +1,6 @@
 import { put } from "@vercel/blob"
 import { NextResponse } from "next/server"
+import pdfParse from "pdf-parse"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
     // Upload to Vercel Blob
     const blob = await put(file.name, file, {
       access: "public",
+      addRandomSuffix: true,
     })
 
     // Extract text from PDF using pdf-parse
@@ -23,7 +25,6 @@ export async function POST(request: Request) {
 
     if (file.type === "application/pdf") {
       try {
-        const pdfParse = (await import("pdf-parse")).default
         const arrayBuffer = await file.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
         const pdfData = await pdfParse(buffer)
