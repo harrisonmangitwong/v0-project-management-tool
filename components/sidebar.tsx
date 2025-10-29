@@ -70,15 +70,19 @@ export function Sidebar({
   }
 
   return (
-    <div className="w-64 border-r border-border bg-sidebar flex flex-col">
-      <div className="p-6 border-b border-sidebar-border">
+    <div className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col">
+      <div className="p-6 border-b border-sidebar-border/20">
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <FileText className="h-5 w-5 text-primary-foreground" />
+          <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center shadow-sm">
+            <FileText className="h-5 w-5 text-sidebar-primary-foreground" />
           </div>
           <h1 className="text-xl font-bold text-sidebar-foreground">SmartPRD</h1>
         </div>
-        <Button className="w-full justify-start gap-2 shadow-sm" size="default" onClick={onCreateProject}>
+        <Button
+          className="w-full justify-start gap-2 shadow-sm bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+          size="default"
+          onClick={onCreateProject}
+        >
           <Plus className="h-4 w-4" />
           Create new project
         </Button>
@@ -86,11 +90,11 @@ export function Sidebar({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-1">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+          <h2 className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-3">
             Your projects
           </h2>
           {projects.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-3 py-2">No projects yet</p>
+            <p className="text-sm text-sidebar-foreground/60 px-3 py-2">No projects yet</p>
           ) : (
             projects.map((project) => (
               <div key={project.id} className="group relative flex items-center gap-1">
@@ -107,7 +111,7 @@ export function Sidebar({
                 </button>
                 <button
                   onClick={(e) => handleDeleteClick(e, project)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-destructive/20 text-sidebar-foreground/60 hover:text-destructive transition-all"
                   title="Delete project"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -118,7 +122,7 @@ export function Sidebar({
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border/20">
         <button
           onClick={onShowMetrics}
           className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all flex items-center gap-2"

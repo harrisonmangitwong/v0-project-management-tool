@@ -304,10 +304,10 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
 
   return (
     <Card className="overflow-hidden bg-card shadow-lg border-border">
-      <div className="flex items-center justify-between p-5 border-b border-border bg-muted/50">
+      <div className="flex items-center justify-between p-5 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <FileText className="h-5 w-5 text-primary" />
+          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+            <FileText className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
             <h3 className="font-semibold text-foreground">{displayFileName}</h3>
