@@ -8,6 +8,7 @@ export interface Project {
   name: string
   prd_content: string | null
   prd_file_name: string | null
+  prd_file_url: string | null // Added prd_file_url to the Project interface
   owner_id: string
   created_at: string
   updated_at: string
@@ -133,7 +134,12 @@ export async function deleteProject(projectId: string) {
   return { error: error?.message }
 }
 
-export async function uploadPRD(projectId: string, prdContent: string | null, fileName: string) {
+export async function uploadPRD(
+  projectId: string,
+  prdContent: string | null,
+  fileUrl: string | null,
+  fileName: string,
+) {
   const supabase = await createClient()
 
   const {
@@ -149,6 +155,7 @@ export async function uploadPRD(projectId: string, prdContent: string | null, fi
     .update({
       prd_content: prdContent,
       prd_file_name: fileName,
+      prd_file_url: fileUrl,
       updated_at: new Date().toISOString(),
     })
     .eq("id", projectId)

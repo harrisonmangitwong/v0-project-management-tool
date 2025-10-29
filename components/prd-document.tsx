@@ -1,5 +1,5 @@
 "use client"
-import { FileText, MoreVertical } from "lucide-react"
+import { FileText, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { JSX } from "react"
@@ -277,11 +277,24 @@ function parseMarkdown(markdown: string): JSX.Element[] {
 interface PRDDocumentProps {
   prdContent?: string | null
   fileName?: string | null
+  fileUrl?: string | null
 }
 
-export function PRDDocument({ prdContent, fileName }: PRDDocumentProps) {
+export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps) {
   const hasContent = !!prdContent
   const displayFileName = fileName || "No PRD uploaded"
+  const hasPDFDownload = !!fileUrl
+
+  const handleDownload = () => {
+    if (fileUrl) {
+      const link = document.createElement("a")
+      link.href = fileUrl
+      link.download = fileName || "document.pdf"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
 
   return (
     <Card className="overflow-hidden bg-background">
@@ -292,9 +305,10 @@ export function PRDDocument({ prdContent, fileName }: PRDDocumentProps) {
           </div>
           <h3 className="font-medium">{displayFileName}</h3>
         </div>
-        {hasContent && (
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-5 w-5" />
+        {hasPDFDownload && (
+          <Button variant="outline" size="sm" onClick={handleDownload}>
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
           </Button>
         )}
       </div>
