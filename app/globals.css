@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Ensuring dark mode colors are applied by default */
   /* Sleek dark mode color palette */
   --background: 222 47% 8%;
   --foreground: 210 40% 98%;
@@ -113,6 +114,10 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  /* Explicitly applying dark background to html and body */
+  html {
+    @apply bg-background text-foreground;
   }
   body {
     @apply bg-background text-foreground;

@@ -55,9 +55,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-gradient-to-br from-background via-background to-background/95">
+    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-background">
       <div className="w-full max-w-sm">
-        <Card className="shadow-2xl border-border/50">
+        <Card className="shadow-2xl border-border/50 bg-card">
           <CardHeader>
             <CardTitle className="text-2xl">Login to SmartPRD</CardTitle>
             <CardDescription>Enter your email and password to access your account</CardDescription>
