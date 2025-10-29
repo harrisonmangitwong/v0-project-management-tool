@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 
-if (typeof window !== "undefined" && !pdfjs.GlobalWorkerOptions.workerSrc) {
-  // Try multiple CDN sources in order of reliability
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+if (typeof window !== "undefined") {
+  pdfjs.GlobalWorkerOptions.workerSrc = ""
 }
 
 interface PDFViewerProps {
