@@ -61,8 +61,8 @@ export function PDFViewer({ url, onError }: PDFViewerProps) {
             <div key={`page_${index + 1}`} className="mb-4">
               <Page
                 pageNumber={index + 1}
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
                 className="shadow-lg"
                 width={pageWidth}
               />
