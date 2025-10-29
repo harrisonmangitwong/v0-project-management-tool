@@ -285,6 +285,8 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
   const displayFileName = fileName || "No PRD uploaded"
   const hasPDFDownload = !!fileUrl
   const isPDFOnly = hasPDFDownload && !hasContent
+  const isPDF = fileName?.toLowerCase().endsWith(".pdf")
+  const canShowInline = isPDFOnly && isPDF && fileUrl
 
   const handleDownload = () => {
     if (fileUrl) {
@@ -317,6 +319,10 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
       <div className="bg-background">
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
+        ) : canShowInline ? (
+          <div className="w-full h-[800px] bg-muted/20">
+            <iframe src={fileUrl} className="w-full h-full border-0" title="PDF Preview" />
+          </div>
         ) : isPDFOnly ? (
           <div className="p-6 text-center py-12">
             <FileText className="h-16 w-16 mx-auto mb-4 text-primary opacity-60" />
