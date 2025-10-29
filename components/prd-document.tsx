@@ -303,10 +303,10 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
   }
 
   return (
-    <Card className="overflow-hidden bg-card shadow-xl border-border/50">
-      <div className="flex items-center justify-between p-5 border-b border-border bg-gradient-to-r from-primary/5 to-secondary/5">
+    <Card className="overflow-hidden bg-card shadow-2xl border-border/50">
+      <div className="flex items-center justify-between p-5 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg ring-2 ring-primary/20">
             <FileText className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -319,7 +319,7 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
             variant="outline"
             size="sm"
             onClick={handleDownload}
-            className="gap-2 shadow-sm hover:shadow-md transition-all duration-200 font-medium bg-transparent"
+            className="gap-2 shadow-lg hover:shadow-xl transition-all duration-200 font-medium bg-muted/50 border-border hover:bg-muted"
           >
             <Download className="h-4 w-4" />
             Download
@@ -327,21 +327,21 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
         )}
       </div>
 
-      <div className="bg-background">
+      <div className="bg-card">
         {hasContent ? (
-          <div className="p-8 max-w-none prose prose-sm">{parseMarkdown(prdContent)}</div>
+          <div className="p-8 max-w-none prose prose-sm prose-invert">{parseMarkdown(prdContent)}</div>
         ) : isPDFOnly ? (
           pdfLoadError ? (
             <div className="p-8 text-center py-20">
               <div className="max-w-md mx-auto">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center shadow-lg">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/20 flex items-center justify-center shadow-xl ring-2 ring-primary/30">
                   <FileText className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">Unable to Display PDF</h3>
                 <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                   The PDF viewer encountered an error. Please download the file to view it.
                 </p>
-                <Button onClick={handleDownload} className="gap-2 shadow-md font-medium">
+                <Button onClick={handleDownload} className="gap-2 shadow-lg hover:shadow-xl font-medium">
                   <Download className="h-4 w-4" />
                   Download PDF
                 </Button>
@@ -354,7 +354,7 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
           )
         ) : (
           <div className="p-8 text-center py-20">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center shadow-xl">
               <FileText className="h-10 w-10 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">No PRD Uploaded</h3>
