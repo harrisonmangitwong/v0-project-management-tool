@@ -283,11 +283,13 @@ interface PRDDocumentProps {
 
 export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDocumentProps) {
   const hasFile = !!fileName
-  const hasContent = !!prdContent
+  const isBase64PDFContent = prdContent?.startsWith("data:application/pdf") ?? false
+  const hasContent = !!prdContent && !isBase64PDFContent
   const displayFileName = fileName || "No PRD uploaded"
 
   const hasBlobURL = !!fileUrl && fileUrl.startsWith("https://")
   const isPDFFile = fileName?.toLowerCase().endsWith(".pdf")
+  const canPreviewPDF = isPDFFile && (hasBlobURL || isBase64PDFContent)
 
   const handleDownload = () => {
     if (!hasBlobURL || !fileUrl) return
@@ -325,9 +327,11 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
       </div>
 
       <div className="bg-background">
-        {hasContent ? (
-          <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
-        ) : hasFile ? (
+        {hasContent && (
+          <div className="p-6 max-w-none">{parseMarkdown(prdContent!)}</div>
+        )}
+
+        {!hasContent && hasFile && !canPreviewPDF && (
           <div className="p-6 text-center py-12">
             <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">Document Uploaded</h3>
@@ -341,12 +345,25 @@ export function PRDDocument({ prdContent, fileName, projectId, fileUrl }: PRDDoc
               </Button>
             )}
           </div>
-        ) : (
+        )}
+
+        {!hasFile && (
           <div className="p-6 text-center py-12 text-muted-foreground">
             <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
             <p className="text-base">
               No PRD uploaded yet. Click 'Upload PRD' to add your product requirements document.
             </p>
+          </div>
+        )}
+
+        {canPreviewPDF && (
+          <div className="border-t border-border bg-muted/20">
+            <iframe
+              title={fileName || "Uploaded PRD PDF"}
+              src={isBase64PDFContent ? prdContent! : fileUrl!}
+              className="w-full h-[640px] bg-white"
+              loading="lazy"
+            />
           </div>
         )}
       </div>

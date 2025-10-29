@@ -1,6 +1,8 @@
 import { put } from "@vercel/blob"
 import { type NextRequest, NextResponse } from "next/server"
 
+export const runtime = "nodejs"
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
