@@ -11,6 +11,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData()
     const file = formData.get("file") as File
+    const projectId = formData.get("projectId") as string
 
     if (!file) {
       console.error("[v0] ERROR: No file provided in request")
@@ -48,6 +49,28 @@ export async function POST(request: Request) {
 
     console.log("[v0] ✓ Upload successful!")
     console.log("[v0]   - URL:", blob.url)
+
+    if (projectId && extractedText) {
+      console.log("[v0] Triggering automatic tailored PRD generation...")
+      try {
+        // Use request.nextUrl.origin to get the current domain dynamically
+        const baseUrl = new URL(request.url).origin
+        const response = await fetch(`${baseUrl}/api/generate-tailored-prd`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId }),
+        })
+
+        if (!response.ok) {
+          console.error("[v0] Failed to generate tailored content:", await response.text())
+        } else {
+          console.log("[v0] ✓ Tailored content generation triggered successfully")
+        }
+      } catch (genError) {
+        console.error("[v0] Error triggering tailored content generation:", genError)
+        // Don't fail the upload if generation fails
+      }
+    }
 
     const response = {
       url: blob.url,

@@ -13,7 +13,7 @@ interface UploadPRDModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   projectId: string
-  onUploadComplete?: () => void // Add callback prop
+  onUploadComplete?: () => void
 }
 
 export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete }: UploadPRDModalProps) {
@@ -70,6 +70,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
     try {
       const formData = new FormData()
       formData.append("file", file)
+      formData.append("projectId", projectId)
 
       console.log("[v0] Sending POST request to /api/upload-prd...")
       const response = await fetch("/api/upload-prd", {
@@ -95,13 +96,13 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
       const responseData = await response.json()
       console.log("[v0] Response data:", responseData)
 
-      const { url, filename, extractedText } = responseData // Get extracted text from response
+      const { url, filename, extractedText } = responseData
 
       console.log("[v0] Calling uploadPRD action...")
       console.log("[v0]   - projectId:", projectId)
       console.log("[v0]   - url:", url)
       console.log("[v0]   - filename:", filename)
-      console.log("[v0]   - extractedText length:", extractedText?.length || 0) // Log extracted text
+      console.log("[v0]   - extractedText length:", extractedText?.length || 0)
 
       const { error: uploadError } = await uploadPRD(projectId, null, url, filename, extractedText)
 
@@ -216,11 +217,6 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
           {uploadMode === "text" && (
             <Button onClick={handleTextUpload} disabled={!prdText.trim() || isUploading}>
               {isUploading ? "Uploading..." : "Upload PRD"}
-            </Button>
-          )}
-          {uploadMode === "file" && (
-            <Button onClick={handleFileUpload} disabled={isUploading}>
-              {isUploading ? "Uploading..." : "Upload PDF"}
             </Button>
           )}
         </div>
