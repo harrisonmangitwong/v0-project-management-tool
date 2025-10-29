@@ -1,5 +1,5 @@
 "use client"
-import { FileText, Download, ExternalLink } from "lucide-react"
+import { FileText, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { JSX } from "react"
@@ -298,12 +298,6 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
     }
   }
 
-  const handleOpenInNewTab = () => {
-    if (fileUrl) {
-      window.open(fileUrl, "_blank")
-    }
-  }
-
   return (
     <Card className="overflow-hidden bg-background">
       <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
@@ -325,29 +319,24 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
         ) : isPDFOnly ? (
-          <div className="p-6 text-center py-16">
-            <div className="max-w-md mx-auto">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
-                <FileText className="h-10 w-10 text-primary" />
+          <div className="w-full h-[800px] bg-muted/20">
+            <object data={fileUrl} type="application/pdf" className="w-full h-full" aria-label="PDF document viewer">
+              <div className="p-6 text-center py-16">
+                <div className="max-w-md mx-auto">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FileText className="h-10 w-10 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">PDF Viewer Not Available</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Your browser doesn't support inline PDF viewing. Please download the file to view it.
+                  </p>
+                  <Button onClick={handleDownload} className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </Button>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">PDF Document Ready</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Your PDF has been uploaded successfully. View it in your browser or download it to your device.
-              </p>
-              <div className="flex gap-3 justify-center">
-                <Button onClick={handleOpenInNewTab} className="gap-2">
-                  <ExternalLink className="h-4 w-4" />
-                  Open in New Tab
-                </Button>
-                <Button variant="outline" onClick={handleDownload} className="gap-2 bg-transparent">
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-6">
-                Tip: For inline text viewing, you can paste the content using "Upload PRD" → "Text Input"
-              </p>
-            </div>
+            </object>
           </div>
         ) : (
           <div className="p-6 text-center py-12 text-muted-foreground">
