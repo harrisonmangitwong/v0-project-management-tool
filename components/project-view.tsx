@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, Upload } from "lucide-react"
+import { ChevronLeft, Upload, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
@@ -256,96 +256,118 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/")}>
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-2xl font-semibold">{project.name}</h1>
+      <div className="border-b border-border bg-card shadow-sm">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => router.push("/")} className="rounded-lg">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">{project.name}</h1>
+              <p className="text-sm text-muted-foreground mt-1">Product Requirements Document</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="max-w-5xl mx-auto space-y-6">
-          {/* PRD Section */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold">PRD</h2>
-              <Button variant="outline" size="sm" onClick={() => setUploadPRDOpen(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload PRD
-              </Button>
-            </div>
-            <PRDDocument
-              prdContent={project.prd_content}
-              fileName={project.prd_file_name}
-              fileUrl={project.prd_file_url}
-            />
-          </section>
-
-          {/* Q&A Section */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold">Q&A</h2>
-                {unresolvedCount > 0 && (
-                  <Badge variant="destructive" className="rounded-full">
-                    {unresolvedCount} unresolved
-                  </Badge>
-                )}
-              </div>
-              <Button size="sm" onClick={() => setScheduleReviewOpen(true)} disabled={stakeholders.length === 0}>
-                Schedule Review
-              </Button>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="flex items-center justify-between mb-4">
-                <TabsList>
-                  <TabsTrigger value="unresolved">Unresolved</TabsTrigger>
-                  <TabsTrigger value="resolved">Resolved</TabsTrigger>
-                  <TabsTrigger value="all">All</TabsTrigger>
-                </TabsList>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Button variant="ghost" size="sm">
-                    By time
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    By upvote
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    Sort
-                  </Button>
+      <div className="flex-1 overflow-auto bg-muted/30">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content - PRD Section */}
+            <section className="lg:col-span-2 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">PRD</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Product requirements and specifications</p>
                 </div>
+                <Button
+                  variant="default"
+                  size="default"
+                  onClick={() => setUploadPRDOpen(true)}
+                  className="gap-2 shadow-sm"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload PRD
+                </Button>
+              </div>
+              <PRDDocument
+                prdContent={project.prd_content}
+                fileName={project.prd_file_name}
+                fileUrl={project.prd_file_url}
+              />
+            </section>
+
+            {/* Sidebar - Q&A Section */}
+            <section className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-2xl font-bold text-foreground">Q&A</h2>
+                  {unresolvedCount > 0 && (
+                    <Badge variant="destructive" className="rounded-full px-2.5 py-0.5">
+                      {unresolvedCount}
+                    </Badge>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setScheduleReviewOpen(true)}
+                  disabled={stakeholders.length === 0}
+                  className="shadow-sm"
+                >
+                  Schedule Review
+                </Button>
               </div>
 
-              <TabsContent value={activeTab} className="space-y-4 mt-0">
-                {filteredQuestions.length === 0 ? (
-                  <Card className="p-8 text-center text-muted-foreground">No {activeTab} questions yet</Card>
-                ) : (
-                  filteredQuestions.map((question) => (
-                    <QuestionCard
-                      key={question.id}
-                      question={question}
-                      onReply={(reply) => {
-                        setQuestions((prev) =>
-                          prev.map((q) => (q.id === question.id ? { ...q, replies: [...q.replies, reply] } : q)),
-                        )
-                      }}
-                      onResolve={() => {
-                        setQuestions((prev) =>
-                          prev.map((q) => (q.id === question.id ? { ...q, status: "resolved" } : q)),
-                        )
-                      }}
-                    />
-                  ))
-                )}
-              </TabsContent>
-            </Tabs>
-          </section>
+              <Card className="shadow-sm">
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <div className="p-4 border-b border-border">
+                    <TabsList className="w-full grid grid-cols-3">
+                      <TabsTrigger value="unresolved" className="text-xs">
+                        Unresolved
+                      </TabsTrigger>
+                      <TabsTrigger value="resolved" className="text-xs">
+                        Resolved
+                      </TabsTrigger>
+                      <TabsTrigger value="all" className="text-xs">
+                        All
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <TabsContent value={activeTab} className="p-4 space-y-3 mt-0">
+                    {filteredQuestions.length === 0 ? (
+                      <div className="py-12 text-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                          <FileText className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">No {activeTab} questions yet</p>
+                      </div>
+                    ) : (
+                      filteredQuestions.map((question) => (
+                        <QuestionCard
+                          key={question.id}
+                          question={question}
+                          onReply={(reply) => {
+                            setQuestions((prev) =>
+                              prev.map((q) => (q.id === question.id ? { ...q, replies: [...q.replies, reply] } : q)),
+                            )
+                          }}
+                          onResolve={() => {
+                            setQuestions((prev) =>
+                              prev.map((q) => (q.id === question.id ? { ...q, status: "resolved" } : q)),
+                            )
+                          }}
+                        />
+                      ))
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </Card>
+            </section>
+          </div>
         </div>
       </div>
 
