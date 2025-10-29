@@ -303,19 +303,24 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
   }
 
   return (
-    <Card className="overflow-hidden bg-card shadow-lg border-border">
-      <div className="flex items-center justify-between p-5 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
+    <Card className="overflow-hidden bg-card shadow-xl border-border/50">
+      <div className="flex items-center justify-between p-5 border-b border-border bg-gradient-to-r from-primary/5 to-secondary/5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-            <FileText className="h-5 w-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+            <FileText className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">{displayFileName}</h3>
+            <h3 className="font-semibold text-foreground tracking-tight">{displayFileName}</h3>
             {isPDF && <p className="text-xs text-muted-foreground mt-0.5">PDF Document</p>}
           </div>
         </div>
         {hasPDFDownload && (
-          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-2 shadow-sm bg-transparent">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownload}
+            className="gap-2 shadow-sm hover:shadow-md transition-all duration-200 font-medium bg-transparent"
+          >
             <Download className="h-4 w-4" />
             Download
           </Button>
@@ -329,14 +334,14 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
           pdfLoadError ? (
             <div className="p-8 text-center py-20">
               <div className="max-w-md mx-auto">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center shadow-lg">
                   <FileText className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Unable to Display PDF</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">Unable to Display PDF</h3>
                 <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                   The PDF viewer encountered an error. Please download the file to view it.
                 </p>
-                <Button onClick={handleDownload} className="gap-2 shadow-sm">
+                <Button onClick={handleDownload} className="gap-2 shadow-md font-medium">
                   <Download className="h-4 w-4" />
                   Download PDF
                 </Button>
@@ -349,10 +354,10 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
           )
         ) : (
           <div className="p-8 text-center py-20">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center shadow-lg">
               <FileText className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">No PRD Uploaded</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">No PRD Uploaded</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Click 'Upload PRD' to add your product requirements document.
             </p>

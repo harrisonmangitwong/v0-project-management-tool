@@ -69,16 +69,16 @@ export function Sidebar({
   }
 
   return (
-    <div className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col">
-      <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-            <FileText className="h-5 w-5 text-primary-foreground" />
+    <div className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col shadow-lg">
+      <div className="p-6 border-b border-sidebar-border/50">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+            <FileText className="h-5 w-5 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-sidebar-foreground">SmartPRD</h1>
+          <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">SmartPRD</h1>
         </div>
         <Button
-          className="w-full justify-start gap-2 shadow-sm bg-gray-700 text-white hover:bg-gray-600"
+          className="w-full justify-start gap-2 shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 font-medium"
           size="default"
           onClick={onCreateProject}
         >
@@ -89,28 +89,28 @@ export function Sidebar({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-1">
-          <h2 className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-3 px-3">
+          <h2 className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3 px-3">
             Your projects
           </h2>
           {projects.length === 0 ? (
-            <p className="text-sm text-sidebar-foreground/60 px-3 py-2">No projects yet</p>
+            <p className="text-sm text-sidebar-foreground/50 px-3 py-2">No projects yet</p>
           ) : (
             projects.map((project) => (
               <div key={project.id} className="group relative flex items-center gap-1">
                 <button
                   onClick={() => onSelectProject(project.id)}
                   className={cn(
-                    "flex-1 text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                    "flex-1 text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                     selectedProjectId === project.id
-                      ? "bg-gray-700 text-white shadow-sm"
-                      : "text-sidebar-foreground hover:bg-gray-200",
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-md"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                   )}
                 >
                   {project.name}
                 </button>
                 <button
                   onClick={(e) => handleDeleteClick(e, project)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-gray-200 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-destructive/20 text-sidebar-foreground/60 hover:text-destructive transition-all duration-200"
                   title="Delete project"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -121,10 +121,10 @@ export function Sidebar({
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border/50">
         <button
           onClick={onShowMetrics}
-          className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-gray-200 transition-all flex items-center gap-2"
+          className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all duration-200 flex items-center gap-2"
         >
           <BarChart3 className="h-4 w-4" />
           Metrics

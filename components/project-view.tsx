@@ -256,22 +256,22 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-muted/30">
       {/* Header */}
-      <div className="border-b border-border bg-gradient-to-r from-primary via-primary to-secondary shadow-sm">
+      <div className="border-b border-border bg-gradient-to-r from-primary via-primary/95 to-secondary shadow-md">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push("/")}
-              className="rounded-lg bg-gray-700 text-white hover:bg-gray-600"
+              className="rounded-xl bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-200 shadow-lg"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-primary-foreground">{project.name}</h1>
-              <p className="text-sm text-primary-foreground/80 mt-1">Product Requirements Document</p>
+              <h1 className="text-3xl font-bold text-white tracking-tight">{project.name}</h1>
+              <p className="text-sm text-white/80 mt-1 font-medium">Product Requirements Document</p>
             </div>
           </div>
         </div>
@@ -285,19 +285,19 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <section className="lg:col-span-2 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-                    <FileText className="h-5 w-5 text-primary-foreground" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg">
+                    <FileText className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-foreground">PRD</h2>
-                    <p className="text-sm text-muted-foreground mt-1">Product requirements and specifications</p>
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">PRD</h2>
+                    <p className="text-sm text-muted-foreground mt-0.5">Product requirements and specifications</p>
                   </div>
                 </div>
                 <Button
                   variant="default"
                   size="default"
                   onClick={() => setUploadPRDOpen(true)}
-                  className="gap-2 shadow-sm bg-gray-700 text-white hover:bg-gray-600"
+                  className="gap-2 shadow-md bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 font-medium"
                 >
                   <Upload className="h-4 w-4" />
                   Upload PRD
@@ -314,13 +314,13 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <section className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-sm">
-                    <FileText className="h-5 w-5 text-accent-foreground" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center shadow-lg">
+                    <FileText className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold text-foreground">Q&A</h2>
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">Q&A</h2>
                     {unresolvedCount > 0 && (
-                      <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 shadow-sm">
+                      <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 shadow-md font-semibold">
                         {unresolvedCount}
                       </Badge>
                     )}
@@ -330,23 +330,23 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   size="sm"
                   onClick={() => setScheduleReviewOpen(true)}
                   disabled={stakeholders.length === 0}
-                  className="shadow-sm bg-gray-700 text-white hover:bg-gray-600 disabled:bg-gray-300 disabled:text-gray-500"
+                  className="shadow-md bg-accent text-accent-foreground hover:bg-accent/90 disabled:bg-muted disabled:text-muted-foreground transition-all duration-200 font-medium"
                 >
                   Schedule Review
                 </Button>
               </div>
 
-              <Card className="shadow-md border-border/50">
+              <Card className="shadow-lg border-border/50 overflow-hidden">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <div className="p-4 border-b border-border">
-                    <TabsList className="w-full grid grid-cols-3">
-                      <TabsTrigger value="unresolved" className="text-xs">
+                  <div className="p-4 border-b border-border bg-muted/30">
+                    <TabsList className="w-full grid grid-cols-3 bg-background shadow-sm">
+                      <TabsTrigger value="unresolved" className="text-xs font-medium">
                         Unresolved
                       </TabsTrigger>
-                      <TabsTrigger value="resolved" className="text-xs">
+                      <TabsTrigger value="resolved" className="text-xs font-medium">
                         Resolved
                       </TabsTrigger>
-                      <TabsTrigger value="all" className="text-xs">
+                      <TabsTrigger value="all" className="text-xs font-medium">
                         All
                       </TabsTrigger>
                     </TabsList>
@@ -355,10 +355,10 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   <TabsContent value={activeTab} className="p-4 space-y-3 mt-0">
                     {filteredQuestions.length === 0 ? (
                       <div className="py-12 text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center shadow-sm">
                           <FileText className="h-8 w-8 text-muted-foreground" />
                         </div>
-                        <p className="text-sm text-muted-foreground">No {activeTab} questions yet</p>
+                        <p className="text-sm text-muted-foreground font-medium">No {activeTab} questions yet</p>
                       </div>
                     ) : (
                       filteredQuestions.map((question) => (
