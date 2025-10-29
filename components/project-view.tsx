@@ -258,34 +258,34 @@ export function ProjectView({ projectId }: ProjectViewProps) {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-gradient-to-r from-primary to-secondary shadow-sm">
+      <div className="border-b border-border bg-gradient-to-r from-primary via-primary to-secondary shadow-md">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push("/")}
-              className="rounded-lg text-primary-foreground hover:bg-white/20"
+              className="rounded-lg text-primary-foreground hover:bg-white/20 backdrop-blur-sm"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-primary-foreground">{project.name}</h1>
-              <p className="text-sm text-primary-foreground/80 mt-1">Product Requirements Document</p>
+              <p className="text-sm text-primary-foreground/90 mt-1">Product Requirements Document</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto bg-muted/30">
+      <div className="flex-1 overflow-auto bg-background">
         <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content - PRD Section */}
             <section className="lg:col-span-2 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-md">
                     <FileText className="h-5 w-5 text-primary-foreground" />
                   </div>
                   <div>
@@ -297,7 +297,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   variant="default"
                   size="default"
                   onClick={() => setUploadPRDOpen(true)}
-                  className="gap-2 shadow-sm"
+                  className="gap-2 shadow-md bg-primary hover:bg-primary/90"
                 >
                   <Upload className="h-4 w-4" />
                   Upload PRD
@@ -314,13 +314,13 @@ export function ProjectView({ projectId }: ProjectViewProps) {
             <section className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shadow-md">
                     <FileText className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-bold text-foreground">Q&A</h2>
                     {unresolvedCount > 0 && (
-                      <Badge variant="destructive" className="rounded-full px-2.5 py-0.5">
+                      <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 shadow-sm">
                         {unresolvedCount}
                       </Badge>
                     )}
@@ -330,13 +330,13 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                   size="sm"
                   onClick={() => setScheduleReviewOpen(true)}
                   disabled={stakeholders.length === 0}
-                  className="shadow-sm"
+                  className="shadow-md bg-accent hover:bg-accent/90"
                 >
                   Schedule Review
                 </Button>
               </div>
 
-              <Card className="shadow-sm">
+              <Card className="shadow-md border-border/50">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <div className="p-4 border-b border-border">
                     <TabsList className="w-full grid grid-cols-3">
