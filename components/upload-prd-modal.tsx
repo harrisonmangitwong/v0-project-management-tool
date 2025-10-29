@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { uploadPRD } from "@/lib/actions/projects"
 import { useRouter } from "next/navigation"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react"
 
 interface UploadPRDModalProps {
   open: boolean
@@ -85,7 +85,6 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
           const errorData = await response.json()
           errorMessage = errorData.error || errorMessage
         } catch {
-          // Response is not JSON, try to get text
           const errorText = await response.text()
           errorMessage = errorText || errorMessage
         }
@@ -96,14 +95,15 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
       const responseData = await response.json()
       console.log("[v0] Response data:", responseData)
 
-      const { url, filename } = responseData
+      const { url, filename, extractedText } = responseData // Get extracted text from response
 
       console.log("[v0] Calling uploadPRD action...")
       console.log("[v0]   - projectId:", projectId)
       console.log("[v0]   - url:", url)
       console.log("[v0]   - filename:", filename)
+      console.log("[v0]   - extractedText length:", extractedText?.length || 0) // Log extracted text
 
-      const { error: uploadError } = await uploadPRD(projectId, null, url, filename)
+      const { error: uploadError } = await uploadPRD(projectId, null, url, filename, extractedText)
 
       if (uploadError) {
         console.error("[v0] uploadPRD returned error:", uploadError)
@@ -166,7 +166,12 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
           ) : (
             <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
               <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground mb-4">Upload a PDF file to extract and display its content</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Upload a PDF file to automatically extract text and generate tailored PRDs
+              </p>
+              <p className="text-xs text-muted-foreground mb-4">
+                Text will be extracted and tailored content will be generated for each stakeholder
+              </p>
               <input
                 type="file"
                 accept=".pdf"
@@ -177,7 +182,16 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
               />
               <label htmlFor="pdf-upload">
                 <Button variant="outline" disabled={isUploading} asChild>
-                  <span>{isUploading ? "Uploading..." : "Choose PDF File"}</span>
+                  <span>
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Extracting and processing...
+                      </>
+                    ) : (
+                      "Choose PDF File"
+                    )}
+                  </span>
                 </Button>
               </label>
             </div>
@@ -189,8 +203,8 @@ export function UploadPRDModal({ open, onOpenChange, projectId, onUploadComplete
             <p className="text-sm text-blue-900 dark:text-blue-100">
               <strong>Note:</strong>{" "}
               {uploadMode === "text"
-                ? "You can use Markdown formatting (headings, lists, tables, etc.)."
-                : "Your PDF will be stored and available for download. For best results, also paste the text content in the Text Input tab."}
+                ? "You can use Markdown formatting (headings, lists, tables, etc.). Tailored content will be generated automatically for stakeholders."
+                : "Your PDF will be processed to extract text, and tailored content will be automatically generated for each stakeholder based on their role."}
             </p>
           </div>
         </div>

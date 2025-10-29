@@ -8,7 +8,8 @@ export interface Project {
   name: string
   prd_content: string | null
   prd_file_name: string | null
-  prd_file_url: string | null // Added prd_file_url to the Project interface
+  prd_file_url: string | null
+  prd_extracted_text: string | null // Added extracted text field
   owner_id: string
   created_at: string
   updated_at: string
@@ -139,6 +140,7 @@ export async function uploadPRD(
   prdContent: string | null,
   fileUrl: string | null,
   fileName: string,
+  extractedText: string | null = null, // Added extractedText parameter
 ) {
   console.log("[v0] ===== uploadPRD ACTION CALLED =====")
   console.log("[v0] Parameters:")
@@ -146,6 +148,7 @@ export async function uploadPRD(
   console.log("[v0]   - prdContent length:", prdContent?.length || 0)
   console.log("[v0]   - fileUrl:", fileUrl)
   console.log("[v0]   - fileName:", fileName)
+  console.log("[v0]   - extractedText length:", extractedText?.length || 0) // Log extracted text
 
   const supabase = await createClient()
 
@@ -164,6 +167,7 @@ export async function uploadPRD(
     prd_content: prdContent,
     prd_file_name: fileName,
     prd_file_url: fileUrl,
+    prd_extracted_text: extractedText, // Store extracted text
     updated_at: new Date().toISOString(),
   }
 
@@ -184,6 +188,29 @@ export async function uploadPRD(
 
   console.log("[v0] ✓ Database update successful!")
   console.log("[v0] Updated project:", JSON.stringify(data, null, 2))
+
+  if (extractedText || prdContent) {
+    console.log("[v0] Triggering automatic tailored PRD generation...")
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/generate-tailored-prd`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId }),
+        },
+      )
+
+      if (!response.ok) {
+        console.error("[v0] Failed to generate tailored content:", await response.text())
+      } else {
+        console.log("[v0] ✓ Tailored content generation triggered successfully")
+      }
+    } catch (genError) {
+      console.error("[v0] Error triggering tailored content generation:", genError)
+      // Don't fail the upload if generation fails
+    }
+  }
 
   revalidatePath("/")
 

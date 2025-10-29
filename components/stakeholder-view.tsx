@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, FileText, Send, CheckCircle2, Calendar, Paperclip } from "lucide-react"
+import { ArrowLeft, FileText, Send, CheckCircle2, Calendar, Paperclip, Loader2 } from "lucide-react"
 import { createQuestion } from "@/lib/actions/questions"
 import { useRouter } from "next/navigation"
 import type { JSX } from "react/jsx-runtime" // Import JSX to declare it
@@ -170,7 +170,12 @@ export function StakeholderView({
   const [newQuestion, setNewQuestion] = useState("")
   const [isResolved, setIsResolved] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [displayContent, setDisplayContent] = useState(tailoredContent) // Use state for content
   const router = useRouter()
+
+  useEffect(() => {
+    setDisplayContent(tailoredContent)
+  }, [tailoredContent])
 
   const handleAskQuestion = async () => {
     if (!newQuestion.trim() || isSubmitting) return
@@ -264,9 +269,17 @@ export function StakeholderView({
               </div>
             </div>
             <Separator className="mb-4" />
-            <div className="prose prose-sm max-w-none">
-              <div className="text-sm">{parseMarkdown(tailoredContent)}</div>
-            </div>
+            {!displayContent || displayContent.trim() === "" ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                <p className="text-sm text-muted-foreground">Generating your tailored PRD content...</p>
+                <p className="text-xs text-muted-foreground mt-2">This may take a few moments</p>
+              </div>
+            ) : (
+              <div className="prose prose-sm max-w-none">
+                <div className="text-sm">{parseMarkdown(displayContent)}</div>
+              </div>
+            )}
           </Card>
 
           {/* Questions Section */}
