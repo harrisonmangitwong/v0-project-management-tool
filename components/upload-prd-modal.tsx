@@ -58,6 +58,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
       return
     }
 
+    console.log("[v0] Starting file upload:", file.name, "Size:", file.size)
     setIsUploading(true)
     setError(null)
 
@@ -65,28 +66,37 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
       const formData = new FormData()
       formData.append("file", file)
 
+      console.log("[v0] Sending request to /api/upload-prd")
       const response = await fetch("/api/upload-prd", {
         method: "POST",
         body: formData,
       })
 
+      console.log("[v0] Response status:", response.status)
+
       if (!response.ok) {
-        throw new Error("Failed to upload file")
+        const errorData = await response.json()
+        console.error("[v0] Server error:", errorData)
+        throw new Error(errorData.error || "Failed to upload file")
       }
 
       const { url, filename, extractedText } = await response.json()
+      console.log("[v0] Upload successful, URL:", url, "Text length:", extractedText?.length || 0)
 
       // Upload the extracted text and blob URL to the database
+      console.log("[v0] Saving to database...")
       const { error: uploadError } = await uploadPRD(projectId, extractedText, url, filename)
 
       if (uploadError) {
+        console.error("[v0] Database save error:", uploadError)
         throw new Error(uploadError)
       }
 
+      console.log("[v0] Upload complete, closing modal")
       onOpenChange(false)
       router.refresh()
     } catch (err) {
-      console.error("Upload error:", err)
+      console.error("[v0] Upload error:", err)
       setError(err instanceof Error ? err.message : "Failed to upload PDF")
     } finally {
       setIsUploading(false)
@@ -172,6 +182,11 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
           </Button>
           {uploadMode === "text" && (
             <Button onClick={handleTextUpload} disabled={!prdText.trim() || isUploading}>
+              {isUploading ? "Uploading..." : "Upload PRD"}
+            </Button>
+          )}
+          {uploadMode === "file" && (
+            <Button onClick={() => {}} disabled={isUploading}>
               {isUploading ? "Uploading..." : "Upload PRD"}
             </Button>
           )}
