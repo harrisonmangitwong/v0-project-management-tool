@@ -79,23 +79,30 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
       console.log("[v0] Response received, status:", response.status)
 
       if (!response.ok) {
-        const errorData = await response.json()
-        console.error("[v0] Server returned error:", errorData)
-        throw new Error(errorData.error || "Failed to upload file")
+        let errorMessage = "Failed to upload file"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch {
+          // Response is not JSON, try to get text
+          const errorText = await response.text()
+          errorMessage = errorText || errorMessage
+        }
+        console.error("[v0] Server returned error:", errorMessage)
+        throw new Error(errorMessage)
       }
 
       const responseData = await response.json()
       console.log("[v0] Response data:", responseData)
 
-      const { url, filename, extractedText } = responseData
+      const { url, filename } = responseData
 
       console.log("[v0] Calling uploadPRD action...")
       console.log("[v0]   - projectId:", projectId)
-      console.log("[v0]   - extractedText length:", extractedText?.length || 0)
       console.log("[v0]   - url:", url)
       console.log("[v0]   - filename:", filename)
 
-      const { error: uploadError } = await uploadPRD(projectId, extractedText, url, filename)
+      const { error: uploadError } = await uploadPRD(projectId, null, url, filename)
 
       if (uploadError) {
         console.error("[v0] uploadPRD returned error:", uploadError)
@@ -182,7 +189,7 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
               <strong>Note:</strong>{" "}
               {uploadMode === "text"
                 ? "You can use Markdown formatting (headings, lists, tables, etc.)."
-                : "Text will be extracted from the PDF and displayed on the page. The original PDF will be available for download."}
+                : "Your PDF will be stored and available for download. For best results, also paste the text content in the Text Input tab."}
             </p>
           </div>
         </div>
@@ -194,6 +201,11 @@ export function UploadPRDModal({ open, onOpenChange, projectId }: UploadPRDModal
           {uploadMode === "text" && (
             <Button onClick={handleTextUpload} disabled={!prdText.trim() || isUploading}>
               {isUploading ? "Uploading..." : "Upload PRD"}
+            </Button>
+          )}
+          {uploadMode === "file" && (
+            <Button onClick={() => {}} disabled={isUploading}>
+              {isUploading ? "Uploading..." : "Upload PDF"}
             </Button>
           )}
         </div>

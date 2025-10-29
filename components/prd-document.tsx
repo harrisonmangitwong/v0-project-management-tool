@@ -284,6 +284,7 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
   const hasContent = !!prdContent
   const displayFileName = fileName || "No PRD uploaded"
   const hasPDFDownload = !!fileUrl
+  const isPDFOnly = hasPDFDownload && !hasContent
 
   const handleDownload = () => {
     if (fileUrl) {
@@ -316,6 +317,18 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
       <div className="bg-background">
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
+        ) : isPDFOnly ? (
+          <div className="p-6 text-center py-12">
+            <FileText className="h-16 w-16 mx-auto mb-4 text-primary opacity-60" />
+            <p className="text-base text-foreground font-medium mb-2">PDF Document Uploaded</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Your PDF has been uploaded successfully. Click the "Download PDF" button above to view it.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Tip: For better inline viewing, you can also paste the text content using the "Upload PRD" button and
+              selecting "Text Input".
+            </p>
+          </div>
         ) : (
           <div className="p-6 text-center py-12 text-muted-foreground">
             <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
