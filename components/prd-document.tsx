@@ -2,6 +2,8 @@
 import { FileText, Download } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PDFViewer } from "@/components/pdf-viewer"
+import { useState } from "react"
 import type { JSX } from "react"
 
 const mockPRDContent = `# Product Requirements Document (PRD) – SmartShot Basketball
@@ -281,6 +283,8 @@ interface PRDDocumentProps {
 }
 
 export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps) {
+  const [pdfLoadError, setPdfLoadError] = useState(false)
+
   const hasContent = !!prdContent
   const displayFileName = fileName || "No PRD uploaded"
   const hasPDFDownload = !!fileUrl
@@ -319,25 +323,27 @@ export function PRDDocument({ prdContent, fileName, fileUrl }: PRDDocumentProps)
         {hasContent ? (
           <div className="p-6 max-w-none">{parseMarkdown(prdContent)}</div>
         ) : isPDFOnly ? (
-          <div className="w-full h-[800px] bg-muted/20">
-            <object data={fileUrl} type="application/pdf" className="w-full h-full" aria-label="PDF document viewer">
-              <div className="p-6 text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-10 w-10 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">PDF Viewer Not Available</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Your browser doesn't support inline PDF viewing. Please download the file to view it.
-                  </p>
-                  <Button onClick={handleDownload} className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </Button>
+          pdfLoadError ? (
+            <div className="p-6 text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-10 w-10 text-primary" />
                 </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Unable to Display PDF</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  The PDF viewer encountered an error. Please download the file to view it.
+                </p>
+                <Button onClick={handleDownload} className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </Button>
               </div>
-            </object>
-          </div>
+            </div>
+          ) : (
+            <div className="w-full min-h-[800px] bg-muted/20 p-6">
+              <PDFViewer url={fileUrl!} onError={() => setPdfLoadError(true)} />
+            </div>
+          )
         ) : (
           <div className="p-6 text-center py-12 text-muted-foreground">
             <FileText className="h-16 w-16 mx-auto mb-4 opacity-40" />
